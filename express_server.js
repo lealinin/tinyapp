@@ -5,6 +5,18 @@ const PORT = 8080;
 
 app.set("view engine", "ejs");
 
+// generate a random short url
+function generateRandomString() {
+  let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+  let stringLength = 6;
+  let randomString = '';
+  for (let i = 0; i < stringLength.length; i++) {
+    let randomNumber = Math.floor(Math.random() * chars.length);
+    randomString += chars.substring(randomNumber, randomNumber + 1);
+  }
+  return randomString;
+}
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"

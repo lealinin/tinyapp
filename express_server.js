@@ -7,14 +7,12 @@ app.set("view engine", "ejs");
 
 // generate a random short url
 function generateRandomString() {
-  let chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-  let stringLength = 6;
-  let randomString = '';
-  for (let i = 0; i < stringLength.length; i++) {
-    let randomNumber = Math.floor(Math.random() * chars.length);
-    randomString += chars.substring(randomNumber, randomNumber + 1);
+  let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  for (let i = 6; i > 0; i--) {
+    result += chars[Math.floor(Math.random() * chars.length)];
   }
-  return randomString;
+  return result;
 }
 
 const urlDatabase = {
@@ -24,8 +22,12 @@ const urlDatabase = {
 
 app.use(bodyParser.urlencoded({extended: true}));
 
+
 app.post("/urls", (req, res) => {
-  console.log(req.body);
+  
+  let shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  console.log(urlDatabase);
   res.send("ok");
 });
 
@@ -43,7 +45,7 @@ app.get("/hello", (req, res) => {
 
 // route handler for urls
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase};
+  let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 

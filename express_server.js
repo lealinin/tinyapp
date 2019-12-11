@@ -22,13 +22,10 @@ const urlDatabase = {
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-
 app.post("/urls", (req, res) => {
-  
-  let shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase);
-  res.send("ok");
+  let shortURL = generateRandomString(); // create encoded short url
+  urlDatabase[shortURL] = req.body.longURL; // add short url to database
+  res.redirect('/urls');
 });
 
 app.get("/", (req, res) => {

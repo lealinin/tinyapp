@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 const PORT = 8080;
 
 app.set("view engine", "ejs");
@@ -42,12 +44,18 @@ app.get("/hello", (req, res) => {
 
 // route handler for urls
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+   };
   res.render("urls_new", templateVars);
 });
 
@@ -56,18 +64,16 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-// app.get("/urls/:shortURL", (req, res) => {
-//   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
-//   res.render("urls_show", templateVars);
-// });
-
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
 
 app.post("/urls/:shortURL/showedit", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  let templateVars = { 
+    shortURL: req.params.shortURL, 
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"] };
   res.render("urls_show", templateVars);
 });
 
@@ -75,14 +81,19 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   console.log("shortURL", req.params.shortURL);
   console.log("req.body.longURL", req.body.longURL);
   urlDatabase[req.params.shortURL] = req.body.longURL;
-  // res.send();
 });
 
-// app.post("/urls", (req, res) => {
-//   let shortURL = generateRandomString(); // create encoded short url
-//   urlDatabase[shortURL] = req.body.longURL; // add short url to database
-//   res.redirect('/urls');
-// });
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+  // console.log('Cookies: ', req.cookies);
+  res.cookie('username', username);
+  res.redirect('/urls');
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

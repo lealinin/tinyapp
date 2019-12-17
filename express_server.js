@@ -3,15 +3,14 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
-const bcrypt = require('bcrypt');
 const PORT = 8080;
 
 app.set("view engine", "ejs");
 
 // generate a random short url
 function generateRandomString() {
-  let chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let result = '';
+  let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let result = "";
   for (let i = 6; i > 0; i--) {
     result += chars[Math.floor(Math.random() * chars.length)];
   }
@@ -29,24 +28,19 @@ const users = {
     id: "userRandomID", 
     email: "user@example.com", 
     password: "purple-monkey-dinosaur"
-    // password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
  "user2RandomID": {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
-    // password: bcrypt.hashSync("dishwasher-funk", 10)
   }
 }
 
 // email lookup helper function
 function getUserByEmail(email) {
-  // console.log('inside getUserByEmail - email:', email);
   for (const userID in users) {
-    // console.log('userID:', userID);
     const user = users[userID];
     if (user.email === email) {
-      // console.log('found existing user with email:', email, 'and its id is:', userID);
       return user;
     }
   }
@@ -96,8 +90,6 @@ app.get("/urls", (req, res) => {
   }
 
   let urls = compareUserID(req.cookies.user_id,urlDatabase);
-  console.log(urls);
-  console.log(urlDatabase)
 
   let templateVars = {
     user,
@@ -107,9 +99,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  // console.log('userID from cookie:', req.cookies.user_id);
   const user = users[req.cookies.user_id];
-  // if user is logged out redirect to login page
   if (user) {
     let templateVars = {
       user,
@@ -129,7 +119,6 @@ app.get("/u/:shortURL", (req, res) => {
 
 // get route for new login page
 app.get("/login", (req, res) => {
-  // console.log('userID from cookie:', req.cookies.user_id);
   const user = users[req.cookies.user_id];
   let templateVars = {
     user: user,
@@ -179,14 +168,12 @@ app.get("/urls/:shortURL/showedit", (req, res) => {
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  // console.log("shortURL", req.params.shortURL);
-  // console.log("req.body.longURL", req.body.longURL);
   const shortURL = req.params.shortURL;
   const ownerId = urlDatabase[shortURL].userID;
   const loggedinId = req.cookies.user_id
 
   if (loggedinId !== ownerId) {
-   res.send('You do not have the access!');
+   res.send("You do not have the access!");
    return;
   };
 
@@ -200,7 +187,6 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  // console.log("UserID for register", users[req.cookies.user_id]);
   const user = users[req.cookies.user_id];
   let templateVars = {
     user: user
@@ -210,19 +196,18 @@ app.get("/register", (req, res) => {
 
 // post route that handles different register scenarios
 app.post("/register", (req, res) => {
-  if (req.body.email === '' || req.body.password === '') {
-    res.status(400).send('No email or password');
+  if (req.body.email === "" || req.body.password === "") {
+    res.status(400).send("No email or password");
   } else {
     let oldUser = getUserByEmail(req.body.email);
     if (oldUser) {
-      res.status(400).send('Email already taken. You cant register with the same email');
+      res.status(400).send("Email already taken. You cant register with the same email");
     } else {
       let objId = generateRandomString();
       let userDetails = {
         id: objId,
         email: req.body.email,
-        // password: req.body.password
-        password: bcrypt.hashSync(req.body.password, 10)
+        password: req.body.password
       };
       users[objId] = userDetails;
       res.cookie('user_id', objId);

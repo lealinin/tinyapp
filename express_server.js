@@ -23,15 +23,15 @@ const urlDatabase = {
   "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW" }
 };
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "dishwasher-funk"
   }
 }
@@ -49,13 +49,13 @@ function getUserByEmail(email) {
 // email and password match
 function authenticateUser(email, password) {
   for (let user in users) {
-    if (users[user].email === email && users[user].password === password){
+    if (users[user].email === email && users[user].password === password) {
       return users[user];
     }
   }
 }
 
-function compareUserID (id, database) {
+function compareUserID(id, database) {
   let obj = {};
   for (let key in database) {
     if (database[key].userID === id) {
@@ -66,7 +66,7 @@ function compareUserID (id, database) {
   return obj;
 }
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 //////////// GET ROUTES /////////////////////
 
@@ -86,10 +86,10 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const user = users[req.cookies.user_id];
   if (!req.cookies.user_id) {
-   return res.redirect("/login");
+    return res.redirect("/login");
   }
 
-  let urls = compareUserID(req.cookies.user_id,urlDatabase);
+  let urls = compareUserID(req.cookies.user_id, urlDatabase);
 
   let templateVars = {
     user,
@@ -132,8 +132,8 @@ app.get("/login", (req, res) => {
 
 // route to create a new url in urldatabase
 app.post("/urls", (req, res) => {
-  let shortURL = generateRandomString(); 
-  
+  let shortURL = generateRandomString();
+
   urlDatabase[shortURL] = {};
   urlDatabase[shortURL].longURL = req.body.longURL;
   urlDatabase[shortURL].userID = req.cookies.user_id;
@@ -142,25 +142,24 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
 
-  const user = users[req.cookies.user_id];
   const shortURL = req.params.shortURL;
   const ownerId = urlDatabase[shortURL].userID;
   const loggedinId = req.cookies.user_id
 
   if (loggedinId !== ownerId) {
-   res.send('You do not have the access!');
-   return;
+    res.send("You do not have access!");
+    return;
   }
-  
+
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
 
 app.get("/urls/:shortURL/showedit", (req, res) => {
   const user = users[req.cookies.user_id];
-  let templateVars = { 
+  let templateVars = {
     user: user,
-    shortURL: req.params.shortURL, 
+    shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
     user_id: req.cookies["user_id"]
   }
@@ -173,8 +172,8 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   const loggedinId = req.cookies.user_id
 
   if (loggedinId !== ownerId) {
-   res.send("You do not have the access!");
-   return;
+    res.send("You do not have access!");
+    return;
   };
 
   urlDatabase[req.params.shortURL].longURL = req.body.longURL;
@@ -201,7 +200,7 @@ app.post("/register", (req, res) => {
   } else {
     let oldUser = getUserByEmail(req.body.email);
     if (oldUser) {
-      res.status(400).send("Email already taken. You cant register with the same email");
+      res.status(400).send("Email already taken.");
     } else {
       let objId = generateRandomString();
       let userDetails = {
@@ -219,15 +218,15 @@ app.post("/register", (req, res) => {
 // post route that handles different login scenarios
 app.post("/login", (req, res) => {
   if (!req.body.email || !req.body.password) {
-    res.status(403).send('box empty');
+    res.status(403).send("Input field is empty");
   } else {
-    //check whether the username and password exists in the database
+    //check whether the username and password exist in the database
     let user = authenticateUser(req.body.email, req.body.password);
-    if(user){
+    if (user) {
       res.cookie('user_id', user.id);
       res.redirect('/urls');
-    } else{
-      res.send("Either username and password is not right");
+    } else {
+      res.send("Your username or password is not correct");
     }
   }
 });

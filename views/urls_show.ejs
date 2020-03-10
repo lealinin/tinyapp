@@ -5,7 +5,7 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <%- include('./partials/_header'); %>
+  <%- include("./partials/_header"); %>
   <title>URL - TinyApp Example</title>
 </head>
 
@@ -17,12 +17,13 @@
       <p class="card-text">Short URL: <a href="/u/<%= shortURL %>" class="text-success"><%= shortURL %></a></p>
       <form method="POST" action=<%= `/urls/${shortURL}/edit` %>>
         <div class="form-group">
-          <input type="text" class="form-control col-sm-4" name="longURL" placeholder="Edit Link" style="margin: 0 auto;">
+          <input type="text" class="form-control col-sm-4" name="longURL" placeholder="Edit Link"
+            style="margin: 0 auto;">
           <input class="btn btn-success" type="submit" value="Submit" style="margin-top: 15px;">
         </div>
       </form>
       </form>
-  </div>
+    </div>
     <div class="card-footer text-muted"></div>
   </div>
   <!-- Bootstrap JS -->
